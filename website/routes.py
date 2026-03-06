@@ -1003,15 +1003,6 @@ def make_url_map(app):
             policy_views.terms_policy,
             OsfWebRenderer('policies/generic_policy.mako', trust=True)
         ),
-        Rule(
-            [
-                '/project/<pid>/',
-                '/project/<pid>/node/<nid>/',
-            ],
-            'get',
-            project_views.node.view_project,
-            OsfWebRenderer('project/project.mako', trust=False)
-        ),
 
         # Process token action
         Rule(
@@ -1055,16 +1046,6 @@ def make_url_map(app):
             OsfWebRenderer('project/settings.mako', trust=False)
         ),
 
-        # Permissions
-        Rule(  # TODO: Where, if anywhere, is this route used?
-            [
-                '/project/<pid>/permissions/<permissions>/',
-                '/project/<pid>/node/<nid>/permissions/<permissions>/',
-            ],
-            'post',
-            project_views.node.project_set_privacy,
-            OsfWebRenderer('project/project.mako', trust=False)
-        ),
 
         # View forks
         Rule(
@@ -1169,16 +1150,6 @@ def make_url_map(app):
             view_kwargs={'mode': 'page'},
         ),
         Rule(
-            [
-                '/<guid>/files/<provider>/<path:path>/',
-                '/project/<pid>/files/<provider>/<path:path>/',
-                '/project/<pid>/node/<nid>/files/<provider>/<path:path>/',
-            ],
-            'get',
-            addon_views.addon_view_or_download_file,
-            OsfWebRenderer('project/view_file.mako', trust=False)
-        ),
-        Rule(
             '/download/<fid_or_guid>/',
             'get',
             addon_views.persistent_file_download,
@@ -1193,59 +1164,6 @@ def make_url_map(app):
             'get',
             addon_views.addon_view_or_download_file,
             json_renderer
-        ),
-        Rule(
-            [
-                '/project/<pid>/files/deleted/<trashed_id>/',
-                '/project/<pid>/node/<nid>/files/deleted/<trashed_id>/',
-            ],
-            'get',
-            addon_views.addon_deleted_file,
-            OsfWebRenderer('project/view_file.mako', trust=False)
-        ),
-        Rule(
-            [
-                # Legacy Addon view file paths
-                '/project/<pid>/<provider>/files/<path:path>/',
-                '/project/<pid>/node/<nid>/<provider>/files/<path:path>/',
-
-                '/project/<pid>/<provider>/files/<path:path>/download/',
-                '/project/<pid>/node/<nid>/<provider>/files/<path:path>/download/',
-
-                # Legacy routes for `download_file`
-                '/project/<pid>/osffiles/<fid>/download/',
-                '/project/<pid>/node/<nid>/osffiles/<fid>/download/',
-
-                # Legacy routes for `view_file`
-                '/project/<pid>/osffiles/<fid>/',
-                '/project/<pid>/node/<nid>/osffiles/<fid>/',
-
-                # Note: Added these old URLs for backwards compatibility with
-                # hard-coded links.
-                '/project/<pid>/osffiles/download/<fid>/',
-                '/project/<pid>/node/<nid>/osffiles/download/<fid>/',
-                '/project/<pid>/files/<fid>/',
-                '/project/<pid>/node/<nid>/files/<fid>/',
-                '/project/<pid>/files/download/<fid>/',
-                '/project/<pid>/node/<nid>/files/download/<fid>/',
-
-                # Legacy routes for `download_file_by_version`
-                '/project/<pid>/osffiles/<fid>/version/<vid>/download/',
-                '/project/<pid>/node/<nid>/osffiles/<fid>/version/<vid>/download/',
-                # Note: Added these old URLs for backwards compatibility with
-                # hard-coded links.
-                '/project/<pid>/osffiles/<fid>/version/<vid>/',
-                '/project/<pid>/node/<nid>/osffiles/<fid>/version/<vid>/',
-                '/project/<pid>/osffiles/download/<fid>/version/<vid>/',
-                '/project/<pid>/node/<nid>/osffiles/download/<fid>/version/<vid>/',
-                '/project/<pid>/files/<fid>/version/<vid>/',
-                '/project/<pid>/node/<nid>/files/<fid>/version/<vid>/',
-                '/project/<pid>/files/download/<fid>/version/<vid>/',
-                '/project/<pid>/node/<nid>/files/download/<fid>/version/<vid>/',
-            ],
-            'get',
-            addon_views.addon_view_or_download_file_legacy,
-            OsfWebRenderer('project/view_file.mako', trust=False),
         ),
         Rule(
             [
