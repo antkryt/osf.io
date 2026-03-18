@@ -258,6 +258,9 @@ class OSFUser(DirtyFieldsMixin, GuidMixin, BaseModel, AbstractBaseUser, Permissi
     # email verification tokens
     #   see also ``unconfirmed_emails``
     email_verifications = DateTimeAwareJSONField(default=dict, blank=True)
+
+    # Temporary field added to verify CI makemigrations --check behavior.
+    dummy_migration_test_flag = models.BooleanField(default=False)
     # Format: {
     #   <token> : {'email': <email address>,
     #              'expiration': <datetime>}
