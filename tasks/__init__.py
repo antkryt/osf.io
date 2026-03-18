@@ -241,7 +241,7 @@ def syntax(ctx):
 @task
 def check_migrations(ctx):
     """Check for missing Django migrations."""
-    ctx.run('python3 manage.py makemigrations --check', echo=True)
+    ctx.run('python3 manage.py --no-init-app --settings=api.base.settings makemigrations --check', echo=True)
 
 
 @task(aliases=['req'])
