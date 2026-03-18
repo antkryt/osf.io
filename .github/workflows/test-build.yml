@@ -31,9 +31,30 @@ jobs:
         mkdir -p ~/.cache/testmon
         rm -rf node_modules  ## TODO remove this later
 
-  addons_and_admin:
+  prechecks:
     runs-on: ubuntu-22.04
     needs: build-cache
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: ${{ env.OSF_DB_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./.github/actions/start-build
+    - name: Run prechecks
+      run: poetry run python3 -m invoke ci-prechecks
+
+  addons_and_admin:
+    runs-on: ubuntu-22.04
+    needs: prechecks
     permissions:
       checks: write
     services:
@@ -60,7 +81,7 @@ jobs:
 
   website:
     runs-on: ubuntu-22.04
-    needs: build-cache
+    needs: prechecks
     permissions:
       checks: write
     services:
@@ -87,7 +108,7 @@ jobs:
 
   api1_and_js:
     runs-on: ubuntu-22.04
-    needs: build-cache
+    needs: prechecks
     permissions:
       checks: write
     services:
@@ -116,7 +137,7 @@ jobs:
 
   api2:
     runs-on: ubuntu-22.04
-    needs: build-cache
+    needs: prechecks
     permissions:
       checks: write
     services:
@@ -145,7 +166,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       checks: write
-    needs: build-cache
+    needs: prechecks
     services:
       postgres:
         image: postgres
@@ -173,7 +194,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       checks: write
-    needs: build-cache
+    needs: prechecks
     services:
       postgres:
         image: postgres
@@ -206,7 +227,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       checks: write
-    needs: build-cache
+    needs: prechecks
     services:
       postgres:
         image: postgres

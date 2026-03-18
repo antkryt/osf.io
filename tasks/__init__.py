@@ -241,7 +241,14 @@ def syntax(ctx):
 @task
 def check_migrations(ctx):
     """Check for missing Django migrations."""
-    ctx.run('python3 manage.py --no-init-app makemigrations --check', echo=True)
+    ctx.run('python3 manage.py --no-init-app makemigrations --settings api.base.settings --check', echo=True)
+
+
+@task
+def ci_prechecks(ctx):
+    """CI-wide checks that must pass before running tests."""
+    check_migrations(ctx)
+    syntax(ctx)
 
 
 @task(aliases=['req'])
