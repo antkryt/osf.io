@@ -47,10 +47,23 @@ jobs:
         ports:
           - 5432:5432
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/start-build
-    - name: Run prechecks
-      run: poetry run python3 -m invoke ci-prechecks
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: reqs_${{ hashFiles('poetry.lock') }}
+          restore-keys: reqs
+      - name: Minimal Python setup for checks
+        run: |
+          pip install poetry==1.8.0
+          poetry install --no-root --without release
+          cp website/settings/local-ci.py website/settings/local.py
+          cp api/base/settings/local-ci.py api/base/settings/local.py
+      - name: Run prechecks
+        run: poetry run python3 -m invoke ci-prechecks
 
   addons_and_admin:
     runs-on: ubuntu-22.04
